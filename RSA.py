@@ -6,10 +6,16 @@ Created on Thu Dec 10 14:32:17 2020
 @author: ignacio
 """
 from sympy import randprime, isprime
+from random import *
 def rsa():
     mensaje = input('Introduzca el mesnaje a cifrar:')
     p = genPrimeP()
     q = genPrimeQ()
+    n = p * q
+    phi = (p-1)*(q-1)
+    mensajeNum = sumMensaje(m)
+    e = randint(1, phi)
+
     
 # Algoritmo de Euclides Extendido
 def egcd(a, b):
