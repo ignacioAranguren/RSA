@@ -8,6 +8,8 @@ Created on Thu Dec 10 14:32:17 2020
 from sympy import randprime, isprime
 def rsa():
     mensaje = input('Introduzca el mesnaje a cifrar:')
+    p = genPrimeP()
+    q = genPrimeQ()
     
 # Algoritmo de Euclides Extendido
 def egcd(a, b):
@@ -47,18 +49,18 @@ def sumMensaje(m):
     return M
 
 
-def genPrime(factor):
-    if(factor == 'p'):
-        primoAux = randprime(2**480,2**481)
-    else:
-        primoAux = randprime(2**512, 2**513)
+def genPrimeP():
+    primoAux = randprime(2**480,2**481)
     primo = 2 * primoAux + 1
     while isprime(primo)==False:
-        if(factor == 'p'):
-            primoAux = randprime(2**480,2**481)
-        else:
-            primoAux = randprime(2**512, 2**513)
+        primoAux = randprime(2**480,2**481)
         primo = 2*primoAux +1
     return primo
       
-    
+def genPrimeQ():
+    primoAux = randprime(2**512, 2**513)
+    primo = 2 * primoAux + 1
+    while isprime(primo)==False:
+        primoAux = randprime(2**512, 2**513)
+        primo = 2*primoAux +1
+    return primo
