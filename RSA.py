@@ -5,10 +5,10 @@ Created on Thu Dec 10 14:32:17 2020
 
 @author: ignacio
 """
-from sympy import randprime
-
+from sympy import randprime, isprime
 def rsa():
     mensaje = input('Introduzca el mesnaje a cifrar:')
+    
 # Algoritmo de Euclides Extendido
 def egcd(a, b):
     x, X = 0, 1
@@ -46,4 +46,19 @@ def sumMensaje(m):
         M+=L[i]*(256**i)
     return M
 
-r = randprime(2**399, 2**400)
+
+def genPrime(factor):
+    if(factor == 'p'):
+        primoAux = randprime(2**480,2**481)
+    else:
+        primoAux = randprime(2**512, 2**513)
+    primo = 2 * primoAux + 1
+    while isprime(primo)==False:
+        if(factor == 'p'):
+            primoAux = randprime(2**480,2**481)
+        else:
+            primoAux = randprime(2**512, 2**513)
+        primo = 2*primoAux +1
+    return primo
+      
+    
