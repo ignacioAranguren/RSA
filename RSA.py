@@ -8,22 +8,6 @@ Created on Thu Dec 10 14:32:17 2020
 from sympy import randprime, isprime
 from random import *
 
-################################################
-#    Cifrado RSA
-################################################
-def rsa():
-    mensaje = input('Introduzca el mensaje a cifrar: ')
-    p = genPrimeP()
-    q = genPrimeQ()
-    n = p * q
-    phi = (p-1)*(q-1)
-    mensajeNum = sumMensaje(mensaje)
-    e = genE(p, q, phi)
-    d = modInverse(e, phi)
-    cifrado = mpow(mensajeNum, e, n)
-    print ("\nMensaje cifrado: " + str(cifrado))
-
-    
 # Algoritmo de Euclides Extendido
 def egcd(a, b):
     x, X = 0, 1
@@ -35,35 +19,6 @@ def egcd(a, b):
         x, X = X - q * x, x
         y, Y = Y - q * y, y
     return ([B, X, Y])
-
-# inverso modular
-def modInverse(a,m):
-    L = egcd(a,m)
-    return L[1] % m
-
-# exponenciación modular y 
-def mpow(x, y, z):
-    e = 1
-    while y:
-        if y & 1:
-            e = e * x % z
-        y >>= 1
-        x = x * x % z
-    return e
-
-################################################
-#    Conversión de mensaje a valores númericos
-################################################
-#Suma todos los valores ascii de los caracteres del mensaje a base 10
-
-def sumMensaje(m):
-    L=list(map(ord, list(m)))
-    l = len(L)
-    L.reverse()
-    M=0
-    for i in range(l):
-        M+=L[i]*(256**i)
-    return M
 
 ################################################
 #    Obtención número e
@@ -78,6 +33,11 @@ def genE(p,q, phi):
         gcd = egcd(phi,e)
         divisor = gcd[0]
     return e
+
+# inverso modular
+def modInverse(a,m):
+    L = egcd(a,m)
+    return L[1] % m
 
 ################################################
 #   Generación de número primo p seguro
@@ -102,3 +62,46 @@ def genPrimeQ():
         primoAux = randprime(2**512, 2**513)
         primo = 2*primoAux +1
     return primo
+
+
+######### Declariación variables globales #########
+p = genPrimeP()
+q = genPrimeQ()
+n = p * q
+phi = (p-1)*(q-1)
+e = genE(p, q, phi)
+d = modInverse(e, phi)
+
+################################################
+#    Cifrado RSA
+################################################
+def rsa():
+    mensaje = input('Introduzca el mensaje a cifrar: ')
+    mensajeNum = sumMensaje(mensaje)
+    cifrado = mpow(mensajeNum, e, n)
+    print ("\nMensaje cifrado: " + str(cifrado))
+
+
+# exponenciación modular y 
+def mpow(x, y, z):
+    e = 1
+    while y:
+        if y & 1:
+            e = e * x % z
+        y >>= 1
+        x = x * x % z
+    return e
+
+################################################
+#    Conversión de mensaje a valores númericos
+################################################
+#Suma todos los valores ascii de los caracteres del mensaje a base 10
+
+def sumMensaje(m):
+    L=list(map(ord, list(m)))
+    l = len(L)
+    L.reverse()
+    M=0
+    for i in range(l):
+        M+=L[i]*(256**i)
+    return M
