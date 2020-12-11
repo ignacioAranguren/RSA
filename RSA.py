@@ -12,14 +12,16 @@ from random import *
 #    Cifrado RSA
 ################################################
 def rsa():
-    mensaje = input('Introduzca el mesnaje a cifrar:')
+    mensaje = input('Introduzca el mensaje a cifrar: ')
     p = genPrimeP()
     q = genPrimeQ()
     n = p * q
     phi = (p-1)*(q-1)
     mensajeNum = sumMensaje(mensaje)
-    e = genE(p, q)
-    
+    e = genE(p, q, phi)
+    d = modInverse(e, phi)
+    cifrado = mpow(mensajeNum, e, n)
+    print ("\nMensaje cifrado: " + str(cifrado))
 
     
 # Algoritmo de Euclides Extendido
@@ -67,8 +69,7 @@ def sumMensaje(m):
 #    Obtención número e
 ################################################
 
-def genE(p,q):
-    phi = (p-1)*(q-1)
+def genE(p,q, phi):
     e = randint(1,phi)
     gcd = egcd(phi,e)
     divisor = gcd[0]
