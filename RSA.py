@@ -72,15 +72,24 @@ phi = (p-1)*(q-1)
 e = genE(p, q, phi)
 d = modInverse(e, phi)
 
+
 ################################################
 #    Cifrado RSA
 ################################################
 def rsa():
     mensaje = input('Introduzca el mensaje a cifrar: ')
-    mensajeNum = sumMensaje(mensaje)
+    mensajeNum = base10(mensaje)
     cifrado = mpow(mensajeNum, e, n)
-    print ("\nMensaje cifrado: " + str(cifrado))
+    print("Mensaje cifrado con formato ASCII: "+valorAscii(convertBase256(cifrado)))
+    print("\n Mensaje cifrado numérico: "+str(cifrado))
 
+
+def descifrado(cripto):
+    #cripto = base10(cripto)
+    mensaje = mpow(int(cripto), d, n)
+    print ("\nMensaje descifrado: " + valorAscii(convertBase256(mensaje)))
+    
+    
 
 # exponenciación modular y 
 def mpow(x, y, z):
@@ -97,7 +106,7 @@ def mpow(x, y, z):
 ################################################
 #Suma todos los valores ascii de los caracteres del mensaje a base 10
 
-def sumMensaje(m):
+def base10(m):
     L=list(map(ord, list(m)))
     l = len(L)
     L.reverse()
@@ -105,3 +114,43 @@ def sumMensaje(m):
     for i in range(l):
         M+=L[i]*(256**i)
     return M
+
+################################################
+#    Conversión de mensaje en base 256
+################################################
+#Recibe como entrada valores enteros en base 10 y lo convierte a una lista de caractares en base256
+
+def convertBase256(n):
+    return list(n.to_bytes(125, 'big'))
+
+
+################################################
+#    Conversión de mensaje a valor ascii
+################################################
+#Convierte la lista de vlaores en bas e256 a su correspodiente valo ASCII
+def valorAscii(n):
+    cadena=''
+    for i in range(len(n)):
+        if(n[i]!=0): cadena+=chr(n[i])
+    return cadena
+        
+def main():
+    op = 0
+    
+    while op==0:
+        print("\n1- Cifrar")
+        print("2- Descifrar")
+        print("0- Salir")
+        op = input("\n Selecciona una opción: ")
+        if(int(op) == 1): 
+            rsa()
+            op=0
+        elif(int(op)==2):
+            cripto = input("Criptograma (valor númerico): ")
+            descifrado(cripto)
+            op = 0
+        else: print("Opción inválida.")
+        
+
+if __name__ == "__main__":
+    main()
