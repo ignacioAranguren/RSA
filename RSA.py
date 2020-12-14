@@ -9,7 +9,10 @@ from sympy import randprime, isprime
 from random import *
 from os import system
 
-# Algoritmo de Euclides Extendido
+################################################
+#    Algoritmo de Euclides Extendido
+################################################
+
 def egcd(a, b):
     x, X = 0, 1
     y, Y = 1, 0
@@ -35,7 +38,9 @@ def genE(p,q, phi):
         divisor = gcd[0]
     return e
 
-# inverso modular
+################################################
+#   Inverso modular
+################################################
 def modInverse(a,m):
     L = egcd(a,m)
     return L[1] % m
@@ -92,7 +97,9 @@ def rsa():
         print('Tamaño de mensaje ----> '+str(len(mensaje))+ "\n")
     return cifrado
 
-
+################################################
+#    Desifrado RSA
+################################################
 def descifrado(cripto):
     #cripto = base10(cripto)
     mensaje = mpow(int(cripto), d, n)
@@ -100,7 +107,9 @@ def descifrado(cripto):
     print ("\nMensaje descifrado: " + valorAscii(num))
     
     
-
+################################################
+#    Exponenciación modular
+################################################
 # exponenciación modular y 
 def mpow(x, y, z):
     e = 1
@@ -132,7 +141,8 @@ def base10(m):
 """
 Recibe como entrada valores enteros en base 10 y lo convierte a una lista
  de caractares en base256.La función to_bytes() convierte el entero a bytes,
- metiendo en cada posición de la lita el valor decimal de 0 a 255.
+ metiendo en cada posición de la lita el valor decimal de 0 a 255 de cada byte
+ en big enddian.
 """
 
 def convertBase256(n):
