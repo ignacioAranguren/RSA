@@ -7,6 +7,7 @@ Created on Thu Dec 10 14:32:17 2020
 """
 from sympy import randprime, isprime
 from random import *
+from os import system
 
 # Algoritmo de Euclides Extendido
 def egcd(a, b):
@@ -77,17 +78,26 @@ d = modInverse(e, phi)
 #    Cifrado RSA
 ################################################
 def rsa():
-    mensaje = input('Introduzca el mensaje a cifrar: ')
-    mensajeNum = base10(mensaje)
-    cifrado = mpow(mensajeNum, e, n)
-    print("Mensaje cifrado con formato ASCII: "+valorAscii(convertBase256(cifrado)))
-    print("\n Mensaje cifrado numérico: "+str(cifrado))
+    try:
+        mensaje = input('Introduzca el mensaje a cifrar: ')
+        if(len(mensaje)>124): raise NameError('MaxMessageSizeException')
+        mensajeNum = base10(mensaje)
+        cifrado = mpow(mensajeNum, e, n)
+        num= convertBase256(cifrado)
+        print("\nMensaje cifrado con formato ASCII: "+valorAscii(num))
+        print("\n Mensaje cifrado numérico: "+str(cifrado))
+    except NameError:
+        print('\n###########################################################')
+        print('El mensaje tiene que ser como máximo de 124 bytes. ')
+        print('Tamaño de mensaje ----> '+str(len(mensaje))+ "\n")
+    return cifrado
 
 
 def descifrado(cripto):
     #cripto = base10(cripto)
     mensaje = mpow(int(cripto), d, n)
-    print ("\nMensaje descifrado: " + valorAscii(convertBase256(mensaje)))
+    num = convertBase256(mensaje)
+    print ("\nMensaje descifrado: " + valorAscii(num))
     
     
 
@@ -118,10 +128,15 @@ def base10(m):
 ################################################
 #    Conversión de mensaje en base 256
 ################################################
-#Recibe como entrada valores enteros en base 10 y lo convierte a una lista de caractares en base256
+
+"""
+Recibe como entrada valores enteros en base 10 y lo convierte a una lista
+ de caractares en base256.La función to_bytes() convierte el entero a bytes,
+ metiendo en cada posición de la lita el valor decimal de 0 a 255.
+"""
 
 def convertBase256(n):
-    return list(n.to_bytes(125, 'big'))
+    return list(n.to_bytes((n.bit_length() +7 )//8, 'big'))
 
 
 ################################################
@@ -135,22 +150,29 @@ def valorAscii(n):
     return cadena
         
 def main():
-    op = 0
-    
+    op = 0 
+    cif = ''
     while op==0:
         print("\n1- Cifrar")
         print("2- Descifrar")
         print("0- Salir")
         op = input("\n Selecciona una opción: ")
         if(int(op) == 1): 
-            rsa()
+            cif = rsa()
             op=0
         elif(int(op)==2):
-            cripto = input("Criptograma (valor númerico): ")
+            if(cif == ''):
+                cripto = input("Criptograma (valor númerico): ")
+            else: 
+                res = input('¿Quieres cifrar el mensaje que has cifrado antes? (S/N)')
+                if(res == 'S' or res == 's'): cripto = cif
+                else: cripto = input("Criptograma (valor númerico): ")
             descifrado(cripto)
             op = 0
+        elif(int(op)==0):
+            op=1
+            print('Adiós')
         else: print("Opción inválida.")
         
-
 if __name__ == "__main__":
     main()
