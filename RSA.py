@@ -1,19 +1,90 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Thu Dec 10 14:32:17 2020
+Titulo: Metodo de cifrado RSA
 
-@author: ignacio
+Created on Fri Dec 11 14:39:36 2020
+
+@author: Grupo 1
+
 """
+
 from sympy import randprime, isprime
-from random import *
-from os import system
+import os
+from random import randint
 
-################################################
-#    Algoritmo de Euclides Extendido
-################################################
+def main():
+    '''
+    Metodo principal del programa0
 
-def egcd(a, b):
+    Returns
+    -------
+    None.
+
+    '''
+    
+    flag = True
+    while flag :
+        print('')
+        print('MENU DE CIFRADO RSA:')
+        print('--------------------')
+        print('1: Generar claves publica y privada')
+        print('2: Cifrar')
+        print('3: Descifrar')
+        print('0: Salir')
+        opc = input('Inserta opcion deseada: ')
+        
+        if opc == "1":
+            _genClaves()
+        
+        if opc == "2":
+            _cifrar()
+            
+        if opc == "3":
+            _descifrar()
+            
+        if opc == "0":
+            flag = False
+
+
+def _genClaves():
+    '''
+    Metodo que genera claves aleartorias
+
+    Returns
+    -------
+    None.
+
+    '''
+    p = _genPrimeP()
+    q = _genPrimeQ()
+    n = p * q
+    phi = (p-1)*(q-1)
+    e = _genE(p, q, phi)
+    d = _modInverse(e, phi)
+    
+    print('Tu clave publica es: ')
+    print('(', e, ', ', n, ')')
+    print('')
+    print('Tu clave privada es: ')
+    print('(', d, ', ', n, ')')
+
+
+def _egcd(a, b):
+    '''
+    Algoritmo extendido de Euclides
+
+    Parameters
+    ----------
+    a : Int
+        DESCRIPTION.
+    b : Int
+        DESCRIPTION.
+
+    Returns
+    -------
+    list
+        DESCRIPTION.
+
+    '''
     x, X = 0, 1
     y, Y = 1, 0
     while (b != 0):
@@ -24,32 +95,69 @@ def egcd(a, b):
         y, Y = Y - q * y, y
     return ([B, X, Y])
 
-################################################
-#    Obtención número e
-################################################
 
-def genE(p,q, phi):
+def _genE(p,q, phi):
+    '''
+    Funcion para la generacion de e. Valor de la clave pública
+
+    Parameters
+    ----------
+    p : Int
+        Numero primo
+    q : Int
+        Numero primo
+    phi : Int
+        Resultado de realizar la operación (p-1)*(q-1)
+
+    Returns
+    -------
+    e : Integer
+        Valor e de la clave pública (e, n)
+
+    '''
     e = randint(1,phi)
-    gcd = egcd(phi,e)
+    gcd = _egcd(phi,e)
     divisor = gcd[0]
+    
     while divisor != 1:
         e = randint(1,phi)
-        gcd = egcd(phi,e)
+        gcd = _egcd(phi,e)
         divisor = gcd[0]
+    
     return e
 
-################################################
-#   Inverso modular
-################################################
-def modInverse(a,m):
-    L = egcd(a,m)
+
+def _modInverse(a,m):
+    '''
+    Función que calcula el modulo inverso de dos valores
+
+    Parameters
+    ----------
+    a : Int
+        DESCRIPTION.
+    m : Int
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
+    L = _egcd(a,m)
     return L[1] % m
 
-################################################
-#   Generación de número primo p seguro
-################################################
 
-def genPrimeP():
+def _genPrimeP():
+    '''
+    Funcion que genera un numero primo
+
+    Returns
+    -------
+    primo : Int
+        Numero primo
+
+    '''
     primoAux = randprime(2**480,2**481)
     primo = 2 * primoAux + 1
     while isprime(primo)==False:
@@ -57,11 +165,17 @@ def genPrimeP():
         primo = 2*primoAux +1
     return primo
       
-################################################
-#   Generación de número primo q seguro
-################################################
 
-def genPrimeQ():
+def _genPrimeQ():
+    '''
+    Funcion que genera un numero primo
+
+    Returns
+    -------
+    primo : Int
+        Numero primo    
+    
+    '''
     primoAux = randprime(2**512, 2**513)
     primo = 2 * primoAux + 1
     while isprime(primo)==False:
@@ -70,48 +184,85 @@ def genPrimeQ():
     return primo
 
 
-######### Declariación variables globales #########
-p = genPrimeP()
-q = genPrimeQ()
-n = p * q
-phi = (p-1)*(q-1)
-e = genE(p, q, phi)
-d = modInverse(e, phi)
+def _cifrar():
+    '''
+    Metodo que cifra un mensaje
 
+    Returns
+    -------
+    None.
 
-################################################
-#    Cifrado RSA
-################################################
-def rsa():
+    '''
     try:
-        mensaje = input('Introduzca el mensaje a cifrar: ')
-        if(len(mensaje)>124): raise NameError('MaxMessageSizeException')
-        mensajeNum = base10(mensaje)
-        cifrado = mpow(mensajeNum, e, n)
-        num= convertBase256(cifrado)
-        print("\nMensaje cifrado con formato ASCII: "+valorAscii(num))
-        print("\n Mensaje cifrado numérico: "+str(cifrado))
+        print('')
+        print('')
+        print('Cifrar mensaje')
+        print('-----------------')
+        print('Inserta tu clave:')
+        e = int(input('e = '), 10)
+        n = int(input('n = '), 10)
+        print('')
+        mensaje = input('Inserta el mensaje cifrado: ')
+        
+        if(len(mensaje)>124): 
+            raise NameError('MaxMessageSizeException')
+        
+        mensajeNum = _base10(mensaje)
+        cifrado = _mpow(mensajeNum, e, n)
+        ##num= convertBase256(cifrado)
+        
+        print("\n Mensaje cifrado es: "+str(cifrado))
+        
     except NameError:
-        print('\n###########################################################')
+        print('### ERROR ###')
         print('El mensaje tiene que ser como máximo de 124 bytes. ')
         print('Tamaño de mensaje ----> '+str(len(mensaje))+ "\n")
-    return cifrado
+    
 
-################################################
-#    Desifrado RSA
-################################################
-def descifrado(cripto):
-    #cripto = base10(cripto)
-    mensaje = mpow(int(cripto), d, n)
-    num = convertBase256(mensaje)
-    print ("\nMensaje descifrado: " + valorAscii(num))
+def _descifrar():
+    '''
+    Metodo que descifra un mensaje
+
+    Returns
+    -------
+    None.
+
+    '''
+    print('')
+    print('')
+    print('Descifrar mensaje')
+    print('-----------------')
+    print('Inserta tu clave:')
+    d = int(input('d = '), 10)
+    n = int(input('n = '), 10)
+    print('')
+    cripto = input('Inserta el mensaje cifrado: ')
     
+    mensaje = _mpow(int(cripto), d, n)
+    num = _convertBase256(mensaje)
     
-################################################
-#    Exponenciación modular
-################################################
-# exponenciación modular y 
-def mpow(x, y, z):
+    print("\nMensaje descifrado: ", _valorAscii(num))
+    
+
+def _mpow(x, y, z):
+    '''
+    Función que calcula la exponenciacion modular
+
+    Parameters
+    ----------
+    x : Int
+        DESCRIPTION.
+    y : Int
+        DESCRIPTION.
+    z : Int
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
     e = 1
     while y:
         if y & 1:
@@ -120,12 +271,22 @@ def mpow(x, y, z):
         x = x * x % z
     return e
 
-################################################
-#    Conversión de mensaje a valores númericos
-################################################
-#Suma todos los valores ascii de los caracteres del mensaje a base 10
 
-def base10(m):
+def _base10(m):
+    '''
+    Función que suma todos los valores ascii de los caracteres del mensaje a base 10
+
+    Parameters
+    ----------
+    m : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
     L=list(map(ord, list(m)))
     l = len(L)
     L.reverse()
@@ -134,55 +295,49 @@ def base10(m):
         M+=L[i]*(256**i)
     return M
 
-################################################
-#    Conversión de mensaje en base 256
-################################################
 
-"""
-Recibe como entrada valores enteros en base 10 y lo convierte a una lista
- de caractares en base256.La función to_bytes() convierte el entero a bytes,
- metiendo en cada posición de la lita el valor decimal de 0 a 255 de cada byte
- en big enddian.
-"""
+def _convertBase256(n):
+    '''
+    Función que convierte a base 256 un mensaje.
+    
+    Recibe como entrada valores enteros en base 10 y lo convierte a una lista
+    de caractares en base256.La función to_bytes() convierte el entero a bytes,
+    metiendo en cada posición de la lita el valor decimal de 0 a 255 de cada byte
+    en big enddian.
 
-def convertBase256(n):
+    Parameters
+    ----------
+    m : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    '''
     return list(n.to_bytes((n.bit_length() +7 )//8, 'big'))
 
 
-################################################
-#    Conversión de mensaje a valor ascii
-################################################
-#Convierte la lista de vlaores en bas e256 a su correspodiente valo ASCII
-def valorAscii(n):
+def _valorAscii(n):
+    '''
+    Funcion que convierte a ascii un mensaje cifrado
+
+    Parameters
+    ----------
+    n : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    cadena : TYPE
+        DESCRIPTION.
+
+    '''
     cadena=''
     for i in range(len(n)):
         if(n[i]!=0): cadena+=chr(n[i])
     return cadena
-        
-def main():
-    op = 0 
-    cif = ''
-    while op==0:
-        print("\n1- Cifrar")
-        print("2- Descifrar")
-        print("0- Salir")
-        op = input("\n Selecciona una opción: ")
-        if(int(op) == 1): 
-            cif = rsa()
-            op=0
-        elif(int(op)==2):
-            if(cif == ''):
-                cripto = input("Criptograma (valor númerico): ")
-            else: 
-                res = input('¿Quieres cifrar el mensaje que has cifrado antes? (S/N)')
-                if(res == 'S' or res == 's'): cripto = cif
-                else: cripto = input("Criptograma (valor númerico): ")
-            descifrado(cripto)
-            op = 0
-        elif(int(op)==0):
-            op=1
-            print('Adiós')
-        else: print("Opción inválida.")
         
 if __name__ == "__main__":
     main()
