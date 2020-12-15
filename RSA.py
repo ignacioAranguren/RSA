@@ -61,11 +61,19 @@ def _genClaves():
     e = _genE(p, q, phi)
     d = _modInverse(e, phi)
     
+    print('Escribiendo claves en el archivo . . .')
+    f=open("./clave.txt", "w")
+    f.write(str(p)+"\n"+str(q)+"\n"+str(n)+"\n"+str(e)+"\n"+str(d))
+    f.close()
+    print("Claves escritas en el archivo clave.txt. . . ")
+    
     print('Tu clave publica es: ')
     print('(', e, ', ', n, ')')
     print('')
     print('Tu clave privada es: ')
     print('(', d, ', ', n, ')')
+    
+    return [p,q,n,e,d]
 
 
 def _egcd(a, b):
@@ -183,6 +191,25 @@ def _genPrimeQ():
         primo = 2*primoAux +1
     return primo
 
+def leerFichero():
+    '''
+    Función para lectura del fichero de claves
+
+    Returns
+    -------
+    list
+        DESCRIPTION.
+
+    '''
+    f = open("./clave.txt")
+    p = int(f.readline())
+    q = int(f.readline())
+    n = int(f.readline())
+    e = int(f.readline())
+    d = int(f.readline())  
+    f.close()
+    return [p,q,n,e,d]
+
 
 def _cifrar():
     '''
@@ -193,30 +220,44 @@ def _cifrar():
     None.
 
     '''
-    try:
-        print('')
-        print('')
-        print('Cifrar mensaje')
-        print('-----------------')
-        print('Inserta tu clave:')
-        e = int(input('e = '), 10)
-        n = int(input('n = '), 10)
-        print('')
-        mensaje = input('Inserta el mensaje cifrado: ')
-        
-        if(len(mensaje)>124): 
-            raise NameError('MaxMessageSizeException')
-        
-        mensajeNum = _base10(mensaje)
-        cifrado = _mpow(mensajeNum, e, n)
-        ##num= convertBase256(cifrado)
-        
-        print("\n Mensaje cifrado es: "+str(cifrado))
-        
-    except NameError:
-        print('### ERROR ###')
-        print('El mensaje tiene que ser como máximo de 124 bytes. ')
-        print('Tamaño de mensaje ----> '+str(len(mensaje))+ "\n")
+    if(os.path.isfile("./clave.txt")==True):
+        print("\nLeyendo claves del fichero ./claves.txt ....")
+        p,q,n,e,d = leerFichero()       
+        print("Claves cargadas con éxito")
+    else:
+        res=''
+        print("No hay claves claves creadas.")
+        while res != 'N' and res != 'n' and res!= 's' and res != 's':
+            res = input('¿Quieres introducir manualmente las claves? (S/N)')
+            if(res == 'N' or res == 'n'): 
+                print("Generando claves")
+                p,q,n,e,d= _genClaves()
+            elif(res== 's' or res == 'S'):
+                e = int(input('e = '), 10)
+                n = int(input('n = '), 10)
+            else: print("Respuesta no válida")
+    print('')
+    print('')
+    print('Cifrar mensaje')
+    print('-----------------')
+    print('Inserta tu clave:')
+    print('')
+    
+    flag = True
+    while flag:
+        mensaje = input('Inserta el mensaje : ')
+        if len(mensaje) >124:
+            flag = True
+            print('### ERROR ###')
+            print('El mensaje tiene que ser como máximo de 124 bytes. ')
+            print('Tamaño de mensaje ----> '+str(len(mensaje))+ "\n")
+        else:
+            flag = False
+            mensajeNum = _base10(mensaje)
+            cifrado = _mpow(mensajeNum, e, n)
+            ##num= convertBase256(cifrado)
+            print("\n Mensaje cifrado es: "+str(cifrado))
+
     
 
 def _descifrar():
@@ -232,17 +273,32 @@ def _descifrar():
     print('')
     print('Descifrar mensaje')
     print('-----------------')
+ 
+    if(os.path.isfile("./clave.txt")==True):
+            print("\nLeyendo claves del fichero ./claves.txt ....")
+            p,q,n,e,d = leerFichero()       
+            print("Claves cargadas con éxito")      
+    else:
+        res=''
+        print("No hay claves claves creadas.")
+        while res != 'N' or res != 'n' or res!= 'y' or res != 'Y':
+            res = input('¿Quieres introducir manualmente las claves? (S/N)')
+            if(res == 'N' or res == 'n'): 
+                print("Generando claves")
+                p,q,n,e,d  = _genClaves()
+            elif(res!= 'y' or res != 'Y'):
+                d = int(input('e = '), 10)
+                n = int(input('n = '), 10)
+            else: print("Respuesta no válida")
     print('Inserta tu clave:')
-    d = int(input('d = '), 10)
-    n = int(input('n = '), 10)
     print('')
-    cripto = input('Inserta el mensaje cifrado: ')
-    
-    mensaje = _mpow(int(cripto), d, n)
-    num = _convertBase256(mensaje)
-    
-    print("\nMensaje descifrado: ", _valorAscii(num))
-    
+    try:
+        cripto = input('Inserta el mensaje cifrado: ')
+        mensaje = _mpow(int(cripto), d, n)
+        num = _convertBase256(mensaje)
+        print("\nMensaje descifrado: ", _valorAscii(num))
+    except ValueError:
+        print('El valor debe de ser numérico')
 
 def _mpow(x, y, z):
     '''
