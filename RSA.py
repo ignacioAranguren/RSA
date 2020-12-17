@@ -220,7 +220,7 @@ def _cifrar():
     cifrado.
 
     '''
-    if(os.path.isfile("./clave.txt")==True):
+    if(os.path.isfile("./clave.txt")==True and os.stat("./clave.txt").st_size != 0):
         print("\nLeyendo claves del fichero ./claves.txt ....")
         p,q,n,e,d = leerFichero()       
         print("Claves cargadas con éxito")
@@ -270,7 +270,7 @@ def _descifrar(cifrado):
     print('Descifrar mensaje')
     print('-----------------')
     res = "n"
-    if(os.path.isfile("./clave.txt")==True):
+    if(os.path.isfile("./clave.txt")==True and os.stat("./clave.txt").st_size != 0):
             print("\nLeyendo claves del fichero ./claves.txt ....")
             p,q,n,e,d = leerFichero()       
             print("Claves cargadas con éxito")      
