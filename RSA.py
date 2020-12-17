@@ -20,7 +20,7 @@ def main():
     None.
 
     '''
-    
+    cifrado=""
     flag = True
     while flag :
         print('')
@@ -36,10 +36,10 @@ def main():
             _genClaves()
         
         if opc == "2":
-            _cifrar()
+           cifrado = _cifrar()
             
         if opc == "3":
-            _descifrar()
+            _descifrar(cifrado)
             
         if opc == "0":
             flag = False
@@ -217,7 +217,7 @@ def _cifrar():
 
     Returns
     -------
-    None.
+    cifrado.
 
     '''
     if(os.path.isfile("./clave.txt")==True):
@@ -227,22 +227,18 @@ def _cifrar():
     else:
         res=''
         print("No hay claves claves creadas.")
-        while res != 'N' and res != 'n' and res!= 's' and res != 's':
+        while res != 'N' and res != 'n' and res!= 's' and res != 'S':
             res = input('¿Quieres introducir manualmente las claves? (S/N)')
             if(res == 'N' or res == 'n'): 
                 print("Generando claves")
                 p,q,n,e,d= _genClaves()
             elif(res== 's' or res == 'S'):
+                print('Inserta tu clave:\n') 
                 e = int(input('e = '), 10)
                 n = int(input('n = '), 10)
             else: print("Respuesta no válida")
-    print('')
-    print('')
-    print('Cifrar mensaje')
+    print('\n\nCifrar mensaje')
     print('-----------------')
-    print('Inserta tu clave:')
-    print('')
-    
     flag = True
     while flag:
         mensaje = input('Inserta el mensaje : ')
@@ -258,9 +254,9 @@ def _cifrar():
             ##num= convertBase256(cifrado)
             print("\n Mensaje cifrado es: "+str(cifrado))
 
-    
+    return cifrado
 
-def _descifrar():
+def _descifrar(cifrado):
     '''
     Metodo que descifra un mensaje
 
@@ -273,7 +269,7 @@ def _descifrar():
     print('')
     print('Descifrar mensaje')
     print('-----------------')
- 
+    res = "n"
     if(os.path.isfile("./clave.txt")==True):
             print("\nLeyendo claves del fichero ./claves.txt ....")
             p,q,n,e,d = leerFichero()       
@@ -281,24 +277,31 @@ def _descifrar():
     else:
         res=''
         print("No hay claves claves creadas.")
-        while res != 'N' or res != 'n' or res!= 'y' or res != 'Y':
+        while res != 'N' and res != 'n' and res!= 's' and res != 'S':
             res = input('¿Quieres introducir manualmente las claves? (S/N)')
             if(res == 'N' or res == 'n'): 
                 print("Generando claves")
                 p,q,n,e,d  = _genClaves()
-            elif(res!= 'y' or res != 'Y'):
+            elif(res== 's' or res == 'S'):
+                print('Inserta tu clave:\n')
                 d = int(input('e = '), 10)
                 n = int(input('n = '), 10)
             else: print("Respuesta no válida")
-    print('Inserta tu clave:')
-    print('')
-    try:
-        cripto = input('Inserta el mensaje cifrado: ')
-        mensaje = _mpow(int(cripto), d, n)
-        num = _convertBase256(mensaje)
-        print("\nMensaje descifrado: ", _valorAscii(num))
-    except ValueError:
-        print('El valor debe de ser numérico')
+    if(str(cifrado) != ""):
+        res = input("Hay un mensaje ya cifrado, ¿quieres descifrar ese u otro? (S/N)")
+        if(res == 'S' or res == 's'):
+           print("\n Mensaje cifrado: "+str(cifrado)+"\n")
+           mensaje = _mpow(int(cifrado), d, n)
+           num = _convertBase256(mensaje)
+           print("\nMensaje descifrado: ", _valorAscii(num))
+    if(str(cifrado) == "" or (res != 's' and res != 'S')):
+       try:
+            cripto = input('Inserta el mensaje cifrado: ')
+            mensaje = _mpow(int(cripto), d, n)
+            num = _convertBase256(mensaje)
+            print("\nMensaje descifrado: ", _valorAscii(num))
+       except ValueError:
+            print('El valor debe de ser numérico')
 
 def _mpow(x, y, z):
     '''
